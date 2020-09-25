@@ -33,13 +33,13 @@ Neo4j interface written in golang.
 # Advanced query
 Using a block {} makes variables inside that block accessable .. SEE: t
 ```
-MATCH (person:Person)-[:WORKS_FOR]->(company)
-WHERE company.name STARTS WITH "Company"
+MATCH (p:Person)-[:WORKS_FOR]->(c:Company)
+WHERE c.name STARTS WITH "Face"
 AND EXISTS {
-  MATCH (person)-[:LIKES]->(t:Technology)
+  MATCH (p)-[:LIKES]->(t:Technology)
   WHERE size((t)<-[:LIKES]-()) >= 3
 }
-RETURN person.name as person, company.name AS company;
+RETURN p.name as p, c.name AS company;
 ```
 
 # Advanced Query combination with Union

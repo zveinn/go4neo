@@ -15,7 +15,7 @@
 # Session 2
 1. Quick recap on session one
 2. Review hello world examples
-2. Talk about cypher
+2. Talk about cypher interface options
 
 # Session 2 tasks
 1. Think about how you would want to use golang to make cypher queries
