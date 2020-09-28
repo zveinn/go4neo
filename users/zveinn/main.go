@@ -9,46 +9,79 @@ import (
 )
 
 type Person struct {
-	Name string
+	Name string `json:"name"`
 }
 
 var Driver neo4j.Driver
 
 func main() {
-	var err error
-	Driver, err = Connect("bolt://localhost:7687", "neo4j", "test", false)
-	if err != nil {
-		panic(err)
-	}
-	defer Driver.Close()
 
-	session, err := NewSession()
+	db := &NeoDB{}
+	err := db.Connect("bolt://localhost:7687", "neo4j", "test", false)
 	if err != nil {
 		panic(err)
 	}
-	defer session.Close()
 
 	values := make(map[string]interface{})
-	values["name"] = "Sveinn3"
-	values["id"] = "11"
-	values["type"] = "newb"
+	values["name"] = "Sveinn"
 
-	// _, err = QUERY(session, "CREATE", "Player", values, []string{"name", "id"})
+	builder := NewBuilder()
+
+	// res, err := builder.CREATE().NODE("p", "Person", values).RUN()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// log.Println(res)
+
+	data, _, err := builder.MATCH().NODE("p", "Person", values).COLLECT("p").Log().RUN()
+	if err != nil {
+		panic(err)
+	}
+	// log.Println(res)
+	for _, v := range data.Nodes {
+		log.Println(v.ID, v.Labels)
+		for ii, iv := range v.Props {
+			log.Println(ii, iv)
+		}
+	}
+
+	os.Exit(1)
+
+	// OLD STUFF
+
+	// Driver, err = Connect("bolt://localhost:7687", "neo4j", "test", false)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer Driver.Close()
+
+	// session, err := NewSession()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer session.Close()
+
+	// values := make(map[string]interface{})
+	// values["name"] = "Sveinn3"
+	// values["id"] = "11"
+	// values["type"] = "newb"
+
+	// // _, err = QUERY(session, "CREATE", "Player", values, []string{"name", "id"})
+	// // if err != nil {
+	// // 	log.Println(err)
+	// // 	os.Exit(1)
+	// // }
+
+	// res, err := QUERY(session, "MATCH", "Player", values, []string{"name", "id", "type"})
 	// if err != nil {
 	// 	log.Println(err)
 	// 	os.Exit(1)
 	// }
+	// for _, record := range res {
+	// 	log.Println(record.Keys(), record.Values())
+	// }
 
-	res, err := QUERY(session, "MATCH", "Player", values, []string{"name", "id", "type"})
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	for _, record := range res {
-		log.Println(record.Keys(), record.Values())
-	}
-
-	List(session)
+	// List(session)
 }
 
 func Connect(uri, user, pass string, encrypted bool) (driver neo4j.Driver, err error) {
