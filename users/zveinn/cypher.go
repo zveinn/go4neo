@@ -49,14 +49,6 @@ type Builder struct {
 	Session neo4j.Session
 }
 
-func (b *Builder) MATCH() *Builder {
-	b.Query = "MATCH "
-	return b
-}
-func (b *Builder) CREATE() *Builder {
-	b.Query = "CREATE "
-	return b
-}
 func (b *Builder) NODE(tag string, object string, keyValues map[string]interface{}) *Builder {
 	b.Query += "(" + tag + ":" + object
 
@@ -71,17 +63,40 @@ func (b *Builder) NODE(tag string, object string, keyValues map[string]interface
 	b.Query += ") "
 	return b
 }
-
+func (b *Builder) MATCH() *Builder {
+	b.Query = "MATCH "
+	return b
+}
+func (b *Builder) CREATE() *Builder {
+	b.Query = "CREATE "
+	return b
+}
+func (b *Builder) WHERE(field, operator, value string) *Builder {
+	b.Query += "WHERE " + field + " " + operator + " '" + value + "' "
+	return b
+}
+func (b *Builder) WITH(tag string) *Builder {
+	b.Query += "WITH " + tag + " "
+	return b
+}
+func (b *Builder) ORDERBY(tag, direction string) *Builder {
+	b.Query += "ORDER BY " + tag + " " + direction + " "
+	return b
+}
 func (b *Builder) RETURN(tag string, fields []string) *Builder {
 	b.Query += "RETURN "
-	for _, v := range fields {
-		b.Query += tag + "." + v + " "
+	if len(fields) < 1 {
+		b.Query += tag + " "
+	} else {
+		for _, v := range fields {
+			b.Query += tag + "." + v + " "
+		}
 	}
 	return b
 }
 
-func (b *Builder) COLLECT(tag string) *Builder {
-	b.Query += "RETURN collect(" + tag + ")"
+func (b *Builder) COLLECT(tag string, as string) *Builder {
+	b.Query += "WITH collect(" + tag + ") as " + as + " "
 	return b
 }
 

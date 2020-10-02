@@ -22,22 +22,21 @@ func main() {
 		panic(err)
 	}
 
-	values := make(map[string]interface{})
-	values["name"] = "Sveinn"
-
 	builder := NewBuilder()
 
-	// res, err := builder.CREATE().NODE("p", "Person", values).RUN()
+	// values := make(map[string]interface{})
+	// values["name"] = "Mary"
+	// data, res, err := builder.CREATE().NODE("p", "Person", values).RUN()
 	// if err != nil {
 	// 	panic(err)
 	// }
 	// log.Println(res)
 
-	data, _, err := builder.MATCH().NODE("p", "Person", values).COLLECT("p").Log().RUN()
+	data, res, err := builder.MATCH().NODE("p", "Person", nil).WHERE("p.name", "=", "Sven").WITH("p").ORDERBY("p.id", "DESC").COLLECT("p", "x").RETURN("x", nil).Log().RUN()
 	if err != nil {
 		panic(err)
 	}
-	// log.Println(res)
+	log.Println(res.Summary())
 	for _, v := range data.Nodes {
 		log.Println(v.ID, v.Labels)
 		for ii, iv := range v.Props {
